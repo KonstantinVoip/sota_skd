@@ -1,0 +1,11 @@
+
+!CONFIGURATION: 'com.ti.ccstudio.buildDefinitions.PRU.Debug.1887340347' [Mon Aug 03 18:36:01 MSK 2015]
+
+	!TOOL: 'com.ti.ccstudio.buildDefinitions.PRU_2.0.exe.compilerDebug.958766497'
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.PRU_2.0.compilerID.HARDWARE_MAC
+
+	!TOOL: 'com.ti.ccstudio.buildDefinitions.PRU_2.0.exe.linkerDebug.353491314'
+
+		!WARNING: Unresolved option: com.ti.ccstudio.buildDefinitions.PRU_2.0.linkerID.DEFINE
+

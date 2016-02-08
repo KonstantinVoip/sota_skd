@@ -76,8 +76,8 @@ unsigned char bufferB[131072];
 #define GPIO_INSTANCE_PIN_NUMBER_22     (22)
 
 
-#pragma DATA_ALIGN(PageTable, MMU_PAGETABLE_ALIGN_SIZE);
-static volatile unsigned int PageTable[MMU_PAGETABLE_NUM_ENTRY];
+//#pragma DATA_ALIGN(PageTable, MMU_PAGETABLE_ALIGN_SIZE);
+//static volatile unsigned int PageTable[MMU_PAGETABLE_NUM_ENTRY];
 /*
 #pragma DATA_SECTION(buf_tab_1, "tab1")
 unsigned char  buf_tab_1[16777216];           //16 М/байт
@@ -205,13 +205,11 @@ int main()
   */
 
 
-
-
 	//Включаем КЭШ память L1_data ,L1_instruction and L2 Unified cache
-    CacheEnable(CACHE_ALL);
+    //CacheEnable(CACHE_ALL);
 
 	//Зажигаем Светодиод что мы стартовали нормально в функции
-    /* Enabling functional clocks for GPIO1 instance. */
+    /*Enabling functional clocks for GPIO1 instance. */
     GPIO1ModuleClkConfig();
     /* Selecting GPIO1[23] pin for use. */
     GPIO1Pin23PinMuxSetup();
@@ -222,11 +220,12 @@ int main()
     /* Setting the GPIO pin as an output pin. */
     GPIODirModeSet(GPIO_INSTANCE_ADDRESS,GPIO_INSTANCE_PIN_NUMBER_22,GPIO_DIR_OUTPUT);
     GPIOPinWrite(GPIO_INSTANCE_ADDRESS,GPIO_INSTANCE_PIN_NUMBER_22,GPIO_PIN_HIGH);
-
     ConsoleUtilsPrintf("+appl:PELENGATOR SOTA_START_OK_rev=%d+\n\r",REVISION_APPLICATION);
 
 
 
+    //Perfomance Timer
+    /*
     int a[200],b[200],c[200];
     int i;
 
@@ -241,14 +240,15 @@ int main()
          c[i]= a[i] * b[i];
      }
     dmtimer7_PerfTimerStop(0);
+    */
 
     //init_syl_uart();
 
     //syl_dtimer3_init();
 
      //init_syl_dtimer();
-     gpio_spi_interface_to_ppm_block();
-     start_poisk_table_algoritm();
+     //gpio_spi_interface_to_ppm_block();
+     //start_poisk_table_algoritm();
      // init_syl_uart();
     //Инициализация SPI шины выполняем.
     //Теперь работаем с SPI шиной стыковка с PPM Блоком через GPIO шину

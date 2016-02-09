@@ -205,7 +205,7 @@ int main()
   */
 
 
-	//Включаем КЭШ память L1_data ,L1_instruction and L2 Unified cache
+	//Включаем КЭШ память L1_data ,L1_instruction and L2 Uni fied cache
     //CacheEnable(CACHE_ALL);
 
 	//Зажигаем Светодиод что мы стартовали нормально в функции

@@ -78,6 +78,7 @@ unsigned char bufferB[131072];
 
 //#pragma DATA_ALIGN(PageTable, MMU_PAGETABLE_ALIGN_SIZE);
 //static volatile unsigned int PageTable[MMU_PAGETABLE_NUM_ENTRY];
+
 /*
 #pragma DATA_SECTION(buf_tab_1, "tab1")
 unsigned char  buf_tab_1[16777216];           //16 М/байт

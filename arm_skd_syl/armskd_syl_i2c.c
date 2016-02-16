@@ -51,7 +51,7 @@ static  unsigned int  syl_rCount;
 
 
 
-static void syl_TPS65217RegRead(unsigned char regOffset, unsigned char* dest);
+//static void syl_TPS65217RegRead(unsigned char regOffset, unsigned char* dest);
 static void syl_TPS65217RegWrite(unsigned char port_level, unsigned char regOffset,unsigned char dest_val, unsigned char mask);
 
 
@@ -203,7 +203,7 @@ void syl_SetupI2CTransmit(unsigned int syl_dcount)
 
 
 
-
+/*
 void syl_TPS65217RegRead(unsigned char regOffset, unsigned char* dest)
 {
     syl_dataToSlave[0] = regOffset;
@@ -213,7 +213,7 @@ void syl_TPS65217RegRead(unsigned char regOffset, unsigned char* dest)
 
     *dest = syl_dataFromSlave[0];
 }
-
+*/
 
 /**
  *  \brief            - Generic function that can write a TPS65217 PMIC
@@ -231,6 +231,8 @@ void syl_TPS65217RegRead(unsigned char regOffset, unsigned char* dest)
  *
  * \return:            None.
  */
+
+/*
 void syl_TPS65217RegWrite(unsigned char port_level, unsigned char regOffset,unsigned char dest_val, unsigned char mask)
 {
     unsigned char read_val;
@@ -282,7 +284,7 @@ void syl_TPS65217RegWrite(unsigned char port_level, unsigned char regOffset,unsi
          syl_SetupI2CTransmit(2);
     }
 }
-
+*/
 
 
 

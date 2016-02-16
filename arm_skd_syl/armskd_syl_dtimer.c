@@ -131,11 +131,11 @@ unsigned int dmtimer7_PerfTimerStop(unsigned short);           //возвращаем коли
 //#define TIMER_INITIAL_COUNT             (0xFFFFA23Fu)
 #define TIMER_PERF_BASE                 (SOC_DMTIMER_7_REGS)
 
-static inline void dtimer3_delay();   //здесь должен быть таймер с задержкой 1 мкс
+//static inline void dtimer3_delay();   //здесь должен быть таймер с задержкой 1 мкс
 static void DMTimerSetUp(void);
-static void DMTimerAintcConfigure(void);
+//static void DMTimerAintcConfigure(void);
 static void DMTimerSetUp(void);
-static void DMTimerIsr(void);
+//static void DMTimerIsr(void);
 
 static volatile unsigned int cntValue = 10;
 static volatile unsigned int flagIsr = 0;
@@ -376,7 +376,7 @@ int init_syl_dtimer(void)
 }
 
 
-
+/*
 static void DMTimerAintcConfigure(void)
 {
     IntAINTCInit();
@@ -384,6 +384,7 @@ static void DMTimerAintcConfigure(void)
     IntPrioritySet(SYS_INT_TINT3, 0, AINTC_HOSTINT_ROUTE_IRQ);
     IntSystemEnable(SYS_INT_TINT3);
 }
+*/
 
 static void DMTimerSetUp(void)
 {
@@ -395,6 +396,7 @@ static void DMTimerSetUp(void)
     DMTimerPostedModeConfig(SOC_DMTIMER_3_REGS,DMTIMER_POSTED);
 }
 
+/*
 static inline void DMTimerIsr(void)
 {
    // DMTimerIntStatusClear(SOC_DMTIMER_3_REGS, DMTIMER_INT_OVF_IT_FLAG);
@@ -408,7 +410,7 @@ static inline void DMTimerIsr(void)
     //else if (cnt==400000) cnt=-1;
     cnt++;
 }
-
+*/
 
 
 
@@ -442,7 +444,7 @@ static void DMTimerSetUp(void)
 
 
 
-
+#if 0
 static inline void dtimer3_delay()
 {
         //DMTimerCounterSet(SOC_DMTIMER_3_REGS, 0);
@@ -474,7 +476,7 @@ static inline void dtimer3_delay()
 
 
 }
-
+#endif
 
 
 //Пример для разбора функций.

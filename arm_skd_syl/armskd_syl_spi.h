@@ -60,18 +60,6 @@ unsigned int buf_dest_ch4;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 //Внешние функции которые должны в каждый отдельный канал передавать данные.
 //Шлём данные в ППМ блок
 extern unsigned short  send_to_ppm_channel_1(unsigned int data_26bit_to_channel1);

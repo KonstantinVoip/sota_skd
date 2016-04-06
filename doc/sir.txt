@@ -1,0 +1,424 @@
+http://processors.wiki.ti.com/index.php/Sitara_SDK_6.00.00_Release_Notes
+http://arago-project.org/git/projects/?p=linux-am33x.git;a=shortlog;h=refs/heads/AM335XPSP_04.06.00.08
+http://comments.gmane.org/gmane.linux.embedded.yocto.meta-ti/1966
+
+
+http://www.stlinux.com/u-boot/mkimage/ramdisk-images
+Invalid CPU Type - valid names are: alpha, arm, x86, ia64, m68k, microblaze, mips, mips64, nios, nios2, ppc, s390, sh, sparc, sparc64, blackfin, avr32
+
+./uboot-mkimage -A ppc -O Linux -T RAMDisk -a 0x00000000 -n uboot ext2 ramdisk rootfs -d zImage ramdisk.gz
+
+
+./uboot-mkimage  -B 4 -A arm -O linux -T multi -C none -a 0x80008000 -e 0x80008000 -n k2x-uclibc/1.0/k21supertel -d rootfs.ext2.gz uimaget.bin
+
+
+./uboot-mkimage  -B 4 -A arm -O linux -C none -a 0x00000000 -e 0x00000000 -n KOSTA -d rootfs.ext2.gz uImage
+ 
+
+./uboot-mkimage  -B 4 -A ppc -O linux -C none -a 0x00000000 -e 0x00000000 -n KOSTA -d rootfs.ext2.gz rootfs.ext2.gz.uboot
+
+
+creating a uboot ramdisk image: rootfs.ext2.gz.uboot
+Image Name:   uboot ext2 ramdisk rootfs
+Created:      Thu Jul 31 20:21:56 2014
+Image Type:   PowerPC Linux RAMDisk Image (gzip compressed)
+Data Size:    4795642 Bytes = 4683.24 kB = 4.57 MB
+Load Address: 0x00000000
+Entry Point:  0x00000000
+
+Started: Thu Jul 31 20:21:36 2014
+Ended:   Thu Jul 31 20:21:57 2014
+Elapsed: 21 seconds
+
+
+tftp 80200000 zImage
+
+tftp 80200000 uImage                     //Linux uImage
+tftp 80F80000 am335x-boneblack.dtb           //dtb Понятно
+tftp 81000000 ramdisk.gz                 //uboot ext2 ramdisk roo
+
+tftp 81000000 rootfs.ext2.gz.uboot
+
+bootm 80200000 81000000 80F80000
+
+tftp 81000000 uRamdisk_initramfs_root
+bootm 80200000 81000000 80F80000
+
+
+tftp 81000000 uimage.bin
+bootm 81000000
+
+[0.000000] Kernel command line: console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootf            stype=ext3 rootwait ip=none
+
+копируем в /usr/local/bin ->   mkimage
+
+
+bootm 80200000 80F80000
+
+
+# CONFIG_SERIAL_OMAP is not set
+
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j2
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bb.org_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- uImage dtbs LOADADDR=0x80008000  -j2
+
+/mkimage -l
+
+(root=/dev/mmcblk0p2 rootwait console=ttyO0,115200) Default kernel command string
+
+
+tftpboot 0x80007FC0 boc/bco/uImage
+tftpboot 0x80F80000 boc/bco/am335x-boneblack.dtb
+bootm 0x80007FC0 - 0x80F80000
+
+
+bootargs=console=ttyS2,115200n8 root=/dev/mmcblk0p2 rw rootwait
+setenv bootargs=console=ttyO0,115200n8 root=/dev/ram0 rw rootfstype=ext2
+
+
+
+
+scripts/kconfig/mconf Kconfig
+.config:20:warning: symbol value '' invalid for PHYS_OFFSET
+warning: (SOC_OMAP5 && SOC_DRA7XX) selects ARM_ERRATA_799270 which has unmet direct dependencies (CPU_V7 && SMP)
+configuration written to .config
+
+
+
+
+omap2plus_defconfig
+
+
+linux-3.12.config
+
+//сервер  ХОСТ-ПК
+ifconfig eth0 192.168.130.128 netmask 255.255.255.0 broadcast 192.168.130.255
+//Клиент  CycloneV
+
+ifconfig eth0 192.168.130.124 netmask 255.255.255.0 broadcast 192.168.130.255
+
+
+
+
+tftp 0x2000000 boc/bco/preloader-mkpimage.bin
+tftp 0x2000000 boc/bco/u-boot.bin
+tftp 0x2000000 boc/bco/u-boot.img
+
+
+
+
+tftp 0x2000000 boc/bco/u-boot.img
+
+
+
+
+4. Load the Preloader image from FAT partition into memory, then write it to the QSPI flash # fatload mmc 0:1 0x2000000 preloader-mkpimage.bin
+# sf probe 
+# sf update 0x2000000 0x00000 $filesize
+
+
+
+sf update 0x2000000 0x00000  $filesize
+sf update 0x2000000 0x60000  $filesize
+
+
+sf write 0x2000000 0x60000  $filesize
+
+
+git clone git://rocketboards.org/linux-socfpga.git
+
+
+git clone git://github.com/beagleboard/kernel.git && cd kernel
+
+
+
+ping 192.168.130.128
+Waiting for PHY auto negotiation to complete. done
+ENET Speed is 100 Mbps - FULL duplex connection
+Using mii0 device
+host 192.168.130.128 is alive
+
+
+https://habrahabr.ru/post/264515/
+
+ifconfig eth0 192.168.130.128 netmask 255.255.255.0 broadcast 192.168.130.255
+
+
+///Загрузка работающей версии ядра
+
+## Flattened Device Tree blob at 00000100
+   Booting using the fdt blob at 0x00000100
+   Loading Device Tree to 03ff7000, end 03fffaa2 ... OK
+
+Linux socfpga_cyclone5 3.10.31-ltsi-02861-g801a40f
+Linux version 3.10.31-ltsi-02861-g801a40f (ubuntu@ip-172-31-31-150) (gcc version 4.8.3 20131202 (prerelease) (Linaro GCC 4.8-2013.12) )
+
+The Angstrom Distribution socfpga_cyclone5 ttyS0
+Angstrom v2013.12 - Kernel 3.10.31-ltsi-02861-g801a40f
+
+
+-------------запихнул linux 10.37 всё ok
+Linux version 3.10.37-ltsi-rt37 (root@linux-akqm) (gcc version 4.9.2 20140904 (prerelease) (crosstool-NG linaro-1.13.1-4.9-2014.09 - Linaro GCC 4.9-2014.09) ) 
+
+
+
+
+
+
+файлы где грузиться u-boot Starting Kernel..
+
+
+C:\Share\uboot\u-boot-socfpga\arch\arm\lib\bootm.c
+C:\Share\uboot\u-boot-socfpga\common\cmd_bootm.c
+
+
+
+linux-socfpga-refs_tags_rel_socfpga-3.10-ltsi-rt_16.02.02_pr.tar.gz
+https://github.com/altera-opensource/linux-socfpga/tree/socfpga-3.10-ltsi-rt
+
+
+
+linux-socfpga-rel_socfpga-3.14_14.06.02.tar.gz
+
+
+Booting Linux on physical CPU 0x0
+
+
+
+
+      CONFIG_DEVTMPFS=y
+      CONFIG_HOTPLUG=y
+      CONFIG_INOTIFY_USER=y
+      CONFIG_NET=y
+      CONFIG_PROC_FS=y
+      CONFIG_SIGNALFD=y
+      CONFIG_SYSFS=y
+      CONFIG_UEVENT_HELPER_PATH=""
+
+
+qspiramdiskaddr=0x2 000 000
+qspiramdiskaddr=0x1 000 000
+qspiramdisksize=0x2 800 000
+
+
+ramnetload=tftp ${rdiskaddr} ${tftpdir}${rdiskimage}
+
+
+updrdisk=run ramnetload;
+sf probe 0:0;
+sf update ${rdiskaddr} ${qspiramdiskaddr} 0x1000000;
+
+sf update 0x2000000 0x3000000 0x1000000;
+sf update 0x3000000 0x4000000 0x1000000;
+
+
+
+updrdisk=run ramnetload; sf probe 0:0; sf update ${rdiskaddr} ${qspiramdiskaddr} 0x1000000; sf update 0x2000000 0x3000000 0x1000000; sf update 0x3000000 0x4000000 0x1000000;
+
+
+
+
+
+
+
+
+
+---------------------Название Файловой системы чтобы не менять---------------------
+uRamdisk_initramfs_root
+
+
+
+
+
+
+
+
+
+
+
+tftp 0x2000000 boc/bco/uimage.bin
+bootm 0x2000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------ВАЖНО ДЛЯ загрузки-------------------------------------
+
+
+Приблизительное описание 
+loadaddr  ->адрес ядра           =0x8000
+rdiskaddr ->адрес ramdisk
+fdtaddr   ->адрес dtb файла
+fpgadata  ->адрес fpga rbf
+
+
+
+
+fpgaload=tftp ${fpgadata} ${tftpdir}${fpgaimage}; fpga load 0 ${fpgadata}; run bridge_enable_handoff; 
+1.run fpgaload
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+qspiload=sf probe ${qspiloadcs};sf read ${loadaddr} ${qspibootimageaddr} ${bootimagesize};sf read ${fdtaddr} ${qspifdtaddr} ${fdtimagesize};
+2. run qspiload        (ядро+dtb  из QSPI флэшки )
+
+------------------------------------------------
+
+3.run ramqspiload   (файловая система из QSPI флэшки)
+ramqspiload=sf probe ${qspiloadcs}; sf read ${rdiskaddr} ${qspiramdiskaddr} 0x1000000; sf read 0x2000000 0x3000000 0x1000000; sf read 0x3000000 0x4000000 0x1000000; 
+
+
+run ramnetload
+
+3.run ramnetload    (фйловая система из сети)   
+ramnetload=tftp ${rdiskaddr} ${tftpdir}${rdiskimage}
+----------------------------------------------
+
+4.команда на загрузку
+//в конце загружаем
+ramboot=setenv bootargs ramdisk_size=140000 mem=1G root=/dev/ram rw rootfstype=ramfs rootwait console=ttyS0,115200 coherent_pool=1M ecc=on ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
+
+run ramboot
+
+
+
+/ # can't run '/etc/rc.d/rcS': No such file or directory
+
+
+dpkg -i multistrap_2.1.20_all.deb
+
+/home/pelengator/workspace/platform/armhf.sh /home/pelengator/workspace/platform-build/
+find . -print0 | cpio --null -ov --format=newc | gzip -9 > /home/pelengator/tmp/armhf-main-initramfs.cpio.gz
+mkimage  -A arm -T ramdisk -C gzip -n 'Debian Image' -d armhf-main-initramfs.cpio.gz uRamdisk
+
+mkimage  -A arm -T ramdisk -C gzip -n 'Debian Image' -d armhf-main-initramfs.cpio.gz uRamdisk_initramfs_root
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!/находясь в директории файловой системы!!!!!!!!!!!
+ln -s sbin/init init
+
+
+/home/pelengator/workspace/linux-ltsi
+
+/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux
+
+
+
+arm-linux-gnueabihf-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+setenv bootargs ramdisk_size=140000 mem=1G root=/dev/ram ro rootfstype=squashfs rootwait console=ttyS0,115200 coherent_pool=1M ecc=on ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
+
+setenv bootargs root=/dev/ram ro rootwait rootfstype=squashfs noinitrd console=ttyS0,115200 coherent_pool=1M ecc=on;ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
+
+
+
+
+_
+
+
+
+
+
+
+
+setenv bootargs root=/dev/ram ro rootwait rootfstype=squashfs noinitrd console=ttyS0,115200 coherent_pool=1M ecc=on;ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sudo /opt/freescale/ltib/usr/bin/rpm --root /home/kosta/ltib-p1020rdb_p2020rdb-20101029/rootfs --dbpath /var/lib/rpm -e --allmatches --nodeps --define '_tmppath /tmp/ltib' libtermcap 2>/dev/null
+sudo /opt/freescale/ltib/usr/bin/rpm --root /home/kosta/ltib-p1020rdb_p2020rdb-20101029/rootfs --dbpath /var/lib/rpm --prefix / --ignorearch -ivh --force --excludedocs --define '_tmppath /tmp/ltib' /home/kosta/ltib-p1020rdb_p2020rdb-20101029/rpm/RPMS/arm/libtermcap-2.0.8-31_1.arm.rpm
+error: failed dependencies:
+        libc.so.6(GLIBC_2.4)   is needed by libtermcap-2.0.8-3
+
+
+
+
+
+
+run ramnetload
+
+
+/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux
+
+
+
+gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux
+
+
+
+
+
+
+
+
+
+
+
+
+
+

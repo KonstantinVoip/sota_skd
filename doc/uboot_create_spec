@@ -1,0 +1,17 @@
+echo "Start Create Uboot SPEC file"
+
+name_paket=u-boot-2010.12-rc2
+path_paket=TMP/my_packet
+user=kosta
+versionLtib=ltib-p2020rdb-20100428
+
+cp /$path_paket/$name_paket.tar.bz2 /opt/freescale/pkgs/
+mkdir /home/$user/$versionLtib/dist/lfs-5.1/$name_paket
+cp /home/$user/$versionLtib/dist/lfs-5.1/u-boot/u-boot.spec /home/$user/$versionLtib/dist/lfs-5.1/$name_paket/$name_paket.spec
+
+
+
+
+echo "Complete Create Uboot SPEC file"
+
+

@@ -1,0 +1,9 @@
+echo "Start Install Paket Script"
+
+name_paket=quagga-0.99.17.spec
+./ltib -m prep -p $name_paket
+./ltib -m scbuild -p $name_paket
+./ltib -m scinstall -p $name_paket
+./ltib -m scdeploy -p $name_paket
+
+echo "Complete Install Paket Script"

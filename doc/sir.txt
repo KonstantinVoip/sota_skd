@@ -30,6 +30,7 @@ Started: Thu Jul 31 20:21:36 2014
 Ended:   Thu Jul 31 20:21:57 2014
 Elapsed: 21 seconds
 
+socfpga_pelengator2_defconfig
 
 tftp 80200000 zImage
 
@@ -284,7 +285,7 @@ qspiload=sf probe ${qspiloadcs};sf read ${loadaddr} ${qspibootimageaddr} ${booti
 ramqspiload=sf probe ${qspiloadcs}; sf read ${rdiskaddr} ${qspiramdiskaddr} 0x1000000; sf read 0x2000000 0x3000000 0x1000000; sf read 0x3000000 0x4000000 0x1000000; 
 
 
-run ramnetload
+
 
 3.run ramnetload    (фйловая система из сети)   
 ramnetload=tftp ${rdiskaddr} ${tftpdir}${rdiskimage}
@@ -403,22 +404,47 @@ error: failed dependencies:
 run ramnetload
 
 
-/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux
-
 
 
 gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux
+export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
+export ARCH=arm
+export CROSS_COMPILE=arm-linux-gnueabihf-
+
+
+arm-linux-gnueabihf-gcc -isystem/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/usr/include -c main.c	
+arm-linux-gnueabihf-gcc main main.o 
+
+
+/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/arm-linux-gnueabihf/include/c++/4.8.3
+
+
+
+
+
+linux-awga:/TMP/MODULE # export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
+linux-awga:/TMP/MODULE # export ARCH=arm
+linux-awga:/TMP/MODULE # export CROSS_COMPILE=arm-linux-gnueabihf-
+
+
+https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+
+
+
+
+'-mcpu=' are: arm1020e arm1020t arm1022e arm1026ej-s arm10e arm10tdmi arm1136j-s arm1136jf-s arm1156t2-s 
+arm1156t2f-s arm1176jz-s arm1176jzf-s arm2 arm250 arm3 arm6 arm60 arm600 arm610 arm620 arm7 arm70 arm700 
+arm700i arm710 arm7100 arm710c arm710t arm720 arm720t arm740t arm7500 arm7500fe arm7d arm7di arm7dm arm7dmi 
+arm7m arm7tdmi arm7tdmi-s arm8 arm810 arm9 arm920 arm920t arm922t arm926ej-s arm940t arm946e-s arm966e-s arm968e-s 
+arm9e arm9tdmi cortex-a15 cortex-a5 cortex-a53 cortex-a7 cortex-a8 cortex-a9 cortex-m0 cortex-m0plus cortex-m1 
+cortex-m3 cortex-m4 cortex-r4 cortex-r4f cortex-r5 cortex-r7 ep9312 fa526 fa606te fa626 fa626te fa726te 
+fmp626 generic-armv7-a iwmmxt iwmmxt2 marvell-pj4 mpcore mpcorenovfp native strongarm strongarm110 strongarm1100 strongarm1110
 
 
 
 
 
 
-
-
-
-
-
-
+gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux
 
 

@@ -324,7 +324,7 @@ arm-linux-gnueabihf-
 
 
 
-
+opt/freescale/rootfs/arm/usr/local/   ---
 
 
 
@@ -372,19 +372,18 @@ setenv bootargs root=/dev/ram ro rootwait rootfstype=squashfs noinitrd console=t
 
 
 
+Mount-cache hash table entries: 512
+CPU: Testing write buffer coherency: ok
+ftrace: allocating 16782 entries in 50 pages
+CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+Setting up static identity map for 0x80480c58 - 0x80480cb0
+CPU1: Booted secondary processor
+CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+Brought up 2 CPUs
+SMP: Total of 2 processors activated (3188.32 BogoMIPS).
+CPU: All CPU(s) started in SVC mode.
 
-
-
-
-
-
-
-
-
-
-
-
-
+-------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -418,8 +417,7 @@ arm-linux-gnueabihf-gcc main main.o
 
 /opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/arm-linux-gnueabihf/include/c++/4.8.3
 
-
-
+4
 
 
 linux-awga:/TMP/MODULE # export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
@@ -446,5 +444,262 @@ fmp626 generic-armv7-a iwmmxt iwmmxt2 marvell-pj4 mpcore mpcorenovfp native stro
 
 
 gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux
+net-tools 1.60
+netstat 1.42 (2001-04-15)
+
+
+
+bootargs = "console=ttyS0,115200";
+
+
+
+
+//Как вызываеться файл DTC
+
+
+/home/kosta/bso_ltib/linux-socfpga/scripts/dtc/dtc -I dts -O dtb -o /home/pelengator/workspace/dtbimage.bin ./socfpga_arria5_furia.dts
+
+
+
+socfpga_arria5_furia_pelengator.dts->   socfpga_arria5.dtsi ->   socfpga.dtsi->   skeleton.dtsi.
+
+
+
+
+
+
+
+//Создаём файловую систему ext2
+
+
+major minor  #blocks  name
+
+  31        0        256 mtdblock0
+  31        1        264 mtdblock1
+  31        2        960 mtdblock2
+  31        3      12288 mtdblock3
+  31        4      24576 mtdblock4
+
+
+
+
+
+
+  31        0        256 mtd0
+  31        1        264 mtd1
+  31        2        960 mtd2
+  31        3      12288 mtd3
+  31        4      24576 mtd4
+
+
+
+
+
+
+
+//Создаём файловую систему jffs2
+В ядре Linux
+
+Device Drivers   --->
+  Memory Technology Device(MTD) support  --->
+    UBI - Unsorted block images --->
+      <*> Enable UBI
+      <*> MTD devices emulation driver(gluebi)(NEW)
+File systems   --->
+  Miscellaneous filesystems  --->
+    <*> UBIFS file system support
+
+
+
+//Создаём файловую систему ubifs
+mkfs.ubifs /dev/mtdblock4
+
+
+
+
+
+
+
+http://free-electrons.com/blog/creating-flashing-ubi-ubifs-images/
+http://www.linux-mtd.infradead.org/faq/ubifs.html
+
+
+
+http://free-electrons.com/blog/managing-flash-storage-with-linux/
+http://comments.gmane.org/gmane.linux.drivers.mtd/35421
+
+
+https://blackfin.uclinux.org/doku.php?id=linux-kernel:ubifs
+http://processors.wiki.ti.com/index.php/UBIFS_Support
+
+
+http://www.linux-mtd.infradead.org/doc/ubifs.html
+
+http://www.2net.co.uk/downloads/ESC-5.4-flash_filesystems-slides.pdf
+
+
+crw-rw----    1 root     root      249,   1 Jan  1 00:22 ubi0_0
+
+
+mdev -s
+ubiattach -p /dev/mtd4
+mdev -s
+mount -t ubifs ubi0:pelengator  /mnt/f1p0/
+
+
+
+
+
+
+UBIFS: default file-system created
+UBIFS: background thread "ubifs_bgt0_0" started, PID 147
+UBIFS: mounted UBI device 0, volume 0, name "pelengator"
+UBIFS: LEB size: 65408 bytes (63 KiB), min./max. I/O unit sizes: 8 bytes/256 bytes
+UBIFS: FS size: 16155776 bytes (15 MiB, 247 LEBs), journal size 784896 bytes (0 MiB, 12 LEBs)
+UBIFS: reserved for root: 763076 bytes (745 KiB)
+UBIFS: media format: w4/r0 (latest is w4/r0), UUID 56A15EDE-2925-4535-B723-0ECB15B1CA09, small LPT model
+
+
+
+
+http://processors.wiki.ti.com/index.php/Creating_a_Root_File_System_for_Linux_on_OMAP35x
+
+
+
+
+
+
+
+
+
+
+
+
+Что мы видим на вычислителе  FURY2.1 загрузили его
+
+procps-ng version 3.3.3
+htop 1.0.1 - (C) 2004-2011 Hisham Muhammad
+OpenSSH_6.0p1 Debian-4+deb7u2, OpenSSL 1.0.1e 11 Feb 2013
+procps-ng version 3.3.3
+net-tools 1.60
+ifconfig 1.42 (2001-04-13)
+GNU Midnight Commander 4.8.3
+mkfs (util-linux 2.20.1)
+
+
+
+
+scp /lib root@<192.168.130.128>:/TMP/FURY
+
+
+
+arm_socfpga
+
+
+scp * root@192.168.130.128:/TMP
+
+
+
+
+
+
+
+
+//монтируем jffs2
+
+mount -t jffs2 mtdblock1 /mnt/f1p0
+
+umount -t jffs2 mtdblock1 /mnt/f1p0
+
+
+
+
+
+
+
+
+
+
+
+
+
+для автоматического монтирования мы должны добавить файл что монтируем в файл fstab
+
+
+
+
+MD5(mc-4.6.1.tar.gz)= 18b20db6e40480a53bac2870c56fc3c4
+
+
+
+MD5(ncurses-5.9.tar.gz)= 8cb9c412e5f2d96bc6f459aa8c6282a1
+
+
+
+MD5(ncurses-5.7.tar.gz)= cce05daf61a64501ef6cd8da1f727ec6
+
+
+
+
+
+
+
+
+
+
+
+//Сборка NCURSES
+export BUILDMACH=i686-pc-linux-gnu
+export TARGETMACH=arm-none-linux-gnueabihf
+export AS=${CROSS}as
+export LD=${CROSS}ld
+export CC=${CROSS}gcc
+export CROSS=arm-linux-gnueabihf-
+export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
+
+
+
+
+./configure --host=$TARGETMACH --prefix=/home/pelengator/ncurses --with-shared --without-debug --without-ada --enable-overwrite --enable-widec
+
+
+
+
+/configure --host=$TARGETMACH --prefix=/opt/freescale/rootfs/arm --with-shared --without-debug -without-cxx-binding  --without-ada --enable-overwrite --enable-widec --disable-db-install                                              
+
+
+
+
+//ПУТЬ к GLIB_CONFIg
+
+
+*** The glib-config script installed by GLIB could not be found
+*** If GLIB was installed in PREFIX, make sure PREFIX/bin is in
+*** your path, or set the GLIB_CONFIG environment variable to the
+*** full path to glib-config.
+configure: error: Test for glib failed.
+GNU Midnight Commander requires glib 1.2.6 or above
+
+
+
+
+Support for compiling GLIBC for ARM GNU/Linux (arm-none-linux-gnueabi)
+is provided by the ports add-on.
+
+You need to download the ports tarball, unpack it, and symlink it into
+your glibc directory as "ports".
+
+Then enable it (and NPTL) with the configuration option
+`--enable-add-ons=nptl,ports`.
+
+That should get you started.
+
+If you are cross-compiling you should set --build, --host and --target
+appropriately.
+
+
+../configure --target=arm-none-linux-gnueabihf --prefix=/opt/ti/tools --with-headers=/opt/ti/tools/include --enable-add-ons --enable-kernel=3.10.37 libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes --disable-profile --host=arm-linux-gnueabihf
+
+
 
 

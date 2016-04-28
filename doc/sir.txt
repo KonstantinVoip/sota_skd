@@ -221,6 +221,7 @@ updrdisk=run ramnetload; sf probe 0:0; sf update ${rdiskaddr} ${qspiramdiskaddr}
 
 
 
+scp main root@192.168.130.124:/mnt/f1p0/
 
 
 

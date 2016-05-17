@@ -1,20 +1,39 @@
 http://processors.wiki.ti.com/index.php/Sitara_SDK_6.00.00_Release_Notes
 http://arago-project.org/git/projects/?p=linux-am33x.git;a=shortlog;h=refs/heads/AM335XPSP_04.06.00.08
 http://comments.gmane.org/gmane.linux.embedded.yocto.meta-ti/1966
-
-
 http://www.stlinux.com/u-boot/mkimage/ramdisk-images
+
+
+//Ссылки на образы Ядра которые я использую.
+git clone git://rocketboards.org/linux-socfpga.git
+git clone git://github.com/beagleboard/kernel.git && cd kernel
+
+Linux socfpga_cyclone5 3.10.31-ltsi-02861-g801a40f
+Linux version 3.10.31-ltsi-02861-g801a40f (ubuntu@ip-172-31-31-150) (gcc version 4.8.3 20131202 (prerelease) (Linaro GCC 4.8-2013.12) )
+
+The Angstrom Distribution socfpga_cyclone5 ttyS0
+Angstrom v2013.12 - Kernel 3.10.31-ltsi-02861-g801a40f
+
+-------------запихнул linux 10.37 всё ok
+Linux version 3.10.37-ltsi-rt37 (root@linux-akqm) (gcc version 4.9.2 20140904 (prerelease) (crosstool-NG linaro-1.13.1-4.9-2014.09 - Linaro GCC 4.9-2014.09) ) 
+
+linux-socfpga-refs_tags_rel_socfpga-3.10-ltsi-rt_16.02.02_pr.tar.gz
+https://github.com/altera-opensource/linux-socfpga/tree/socfpga-3.10-ltsi-rt
+linux-socfpga-rel_socfpga-3.14_14.06.02.tar.gz
+
+
+Linux version 3.14.26-g2489c02 (gtbldadm@ubuntu-12) (gcc version 4.7.3 20130226 (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.03-20130313 - Linaro GCC 2013.03) ) #1 Fri Apr 10 14:59:04 EDT 2015
+Linux arm_socfpga 3.14.26-g2489c02 #1 Fri Apr 10 14:59:04 EDT 2015 armv7l GNU/Linux
+http://processors.wiki.ti.com/index.php/?title=Sitara_Linux_SDK_Release_Notes&oldid=197860
+http://downloads.ti.com/sitara_linux/esd/AM335xSDK/latest/index_FDS.html
+https://github.com/beagleboard/linux/tree/3.14
+https://github.com/RobertCNelson/ti-linux-kernel/tree/ti-linux-3.14.y
+http://studyprog.ru/bb_tisdk_qt/  //qt -создание
+
 Invalid CPU Type - valid names are: alpha, arm, x86, ia64, m68k, microblaze, mips, mips64, nios, nios2, ppc, s390, sh, sparc, sparc64, blackfin, avr32
-
 ./uboot-mkimage -A ppc -O Linux -T RAMDisk -a 0x00000000 -n uboot ext2 ramdisk rootfs -d zImage ramdisk.gz
-
-
 ./uboot-mkimage  -B 4 -A arm -O linux -T multi -C none -a 0x80008000 -e 0x80008000 -n k2x-uclibc/1.0/k21supertel -d rootfs.ext2.gz uimaget.bin
-
-
 ./uboot-mkimage  -B 4 -A arm -O linux -C none -a 0x00000000 -e 0x00000000 -n KOSTA -d rootfs.ext2.gz uImage
- 
-
 ./uboot-mkimage  -B 4 -A ppc -O linux -C none -a 0x00000000 -e 0x00000000 -n KOSTA -d rootfs.ext2.gz rootfs.ext2.gz.uboot
 
 
@@ -30,31 +49,36 @@ Started: Thu Jul 31 20:21:36 2014
 Ended:   Thu Jul 31 20:21:57 2014
 Elapsed: 21 seconds
 
+
+//Перед персборкой для другой платформы нужно обязательно делать make mrproper для ядра Linux
 socfpga_pelengator2_defconfig
-
-tftp 80200000 zImage
-
-tftp 80200000 uImage                     //Linux uImage
-tftp 80F80000 am335x-boneblack.dtb           //dtb Понятно
-tftp 81000000 ramdisk.gz                 //uboot ext2 ramdisk roo
-
-tftp 81000000 rootfs.ext2.gz.uboot
-
-bootm 80200000 81000000 80F80000
-
-tftp 81000000 uRamdisk_initramfs_root
-bootm 80200000 81000000 80F80000
+omap2plus_defconfig
 
 
-tftp 81000000 uimage.bin
-bootm 81000000
 
-[0.000000] Kernel command line: console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootf            stype=ext3 rootwait ip=none
+//Старт ядра для beagleboneblack нужно понимать что пока только ядро 3.2 так как там есть файл board-am335x.c в новых ядрах нет поэтому
+//нужно эксперементировать
+//отличаються команды  bootz для  zImage
+//                     bootm для  uImage
+tftp 82000000    boc/bco/zImage
+tftp 88000000    boc/bco/am335x-boneblack.dtb (не нужен для ядра 3.2) пробеум с новыми версиями ядра
+tftp 88080000    boc/bco/uRamdisk_initramfs_root
+
+bootz 82000000 88080000  88000000   //если использовать dtb файл
+bootz 82000000 88000000             //ядро и файловая система
+
+bootm 80200000 80F80000
+ramboot=echo Booting from ramdisk ...; run ramargs; bootz ${loadaddr} ${rdaddr} ${fdtaddr}
+bootargs=console=ttyO0,115200n8 root=/dev/ram0 rw rootfstype=ramfs
+
+
+
+
 
 копируем в /usr/local/bin ->   mkimage
 
 
-bootm 80200000 80F80000
+
 
 
 # CONFIG_SERIAL_OMAP is not set
@@ -88,15 +112,12 @@ configuration written to .config
 
 
 
-omap2plus_defconfig
 
 
-linux-3.12.config
-
+//настройки ethernet
 //сервер  ХОСТ-ПК
 ifconfig eth0 192.168.130.128 netmask 255.255.255.0 broadcast 192.168.130.255
 //Клиент  CycloneV
-
 ifconfig eth0 192.168.130.124 netmask 255.255.255.0 broadcast 192.168.130.255
 
 
@@ -105,10 +126,6 @@ ifconfig eth0 192.168.130.124 netmask 255.255.255.0 broadcast 192.168.130.255
 tftp 0x2000000 boc/bco/preloader-mkpimage.bin
 tftp 0x2000000 boc/bco/u-boot.bin
 tftp 0x2000000 boc/bco/u-boot.img
-
-
-
-
 tftp 0x2000000 boc/bco/u-boot.img
 
 
@@ -127,10 +144,7 @@ sf update 0x2000000 0x60000  $filesize
 sf write 0x2000000 0x60000  $filesize
 
 
-git clone git://rocketboards.org/linux-socfpga.git
 
-
-git clone git://github.com/beagleboard/kernel.git && cd kernel
 
 
 
@@ -152,19 +166,6 @@ ifconfig eth0 192.168.130.128 netmask 255.255.255.0 broadcast 192.168.130.255
    Booting using the fdt blob at 0x00000100
    Loading Device Tree to 03ff7000, end 03fffaa2 ... OK
 
-Linux socfpga_cyclone5 3.10.31-ltsi-02861-g801a40f
-Linux version 3.10.31-ltsi-02861-g801a40f (ubuntu@ip-172-31-31-150) (gcc version 4.8.3 20131202 (prerelease) (Linaro GCC 4.8-2013.12) )
-
-The Angstrom Distribution socfpga_cyclone5 ttyS0
-Angstrom v2013.12 - Kernel 3.10.31-ltsi-02861-g801a40f
-
-
--------------запихнул linux 10.37 всё ok
-Linux version 3.10.37-ltsi-rt37 (root@linux-akqm) (gcc version 4.9.2 20140904 (prerelease) (crosstool-NG linaro-1.13.1-4.9-2014.09 - Linaro GCC 4.9-2014.09) ) 
-
-
-
-
 
 
 файлы где грузиться u-boot Starting Kernel..
@@ -173,29 +174,6 @@ Linux version 3.10.37-ltsi-rt37 (root@linux-akqm) (gcc version 4.9.2 20140904 (p
 C:\Share\uboot\u-boot-socfpga\arch\arm\lib\bootm.c
 C:\Share\uboot\u-boot-socfpga\common\cmd_bootm.c
 
-
-
-linux-socfpga-refs_tags_rel_socfpga-3.10-ltsi-rt_16.02.02_pr.tar.gz
-https://github.com/altera-opensource/linux-socfpga/tree/socfpga-3.10-ltsi-rt
-
-
-
-linux-socfpga-rel_socfpga-3.14_14.06.02.tar.gz
-
-
-Booting Linux on physical CPU 0x0
-
-
-
-
-      CONFIG_DEVTMPFS=y
-      CONFIG_HOTPLUG=y
-      CONFIG_INOTIFY_USER=y
-      CONFIG_NET=y
-      CONFIG_PROC_FS=y
-      CONFIG_SIGNALFD=y
-      CONFIG_SYSFS=y
-      CONFIG_UEVENT_HELPER_PATH=""
 
 
 qspiramdiskaddr=0x2 000 000
@@ -218,9 +196,6 @@ sf update 0x3000000 0x4000000 0x1000000;
 updrdisk=run ramnetload; sf probe 0:0; sf update ${rdiskaddr} ${qspiramdiskaddr} 0x1000000; sf update 0x2000000 0x3000000 0x1000000; sf update 0x3000000 0x4000000 0x1000000;
 
 
-
-
-
 scp main root@192.168.130.124:/mnt/f1p0/
 
 
@@ -229,37 +204,13 @@ scp main root@192.168.130.124:/mnt/f1p0/
 ---------------------Название Файловой системы чтобы не менять---------------------
 uRamdisk_initramfs_root
 
-
-
-
-
-
-
-
-
-
-
 tftp 0x2000000 boc/bco/uimage.bin
 bootm 0x2000000
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------ВАЖНО ДЛЯ загрузки-------------------------------------
-
+//------------------------------------------------------ВАЖНО ДЛЯ загрузки-------------------------------------//
+//------------------------------------------------------ВАЖНО ДЛЯ загрузки-------------------------------------//
+//------------------------------------------------------ВАЖНО ДЛЯ загрузки-------------------------------------//
 
 Приблизительное описание 
 loadaddr  ->адрес ядра           =0x8000
@@ -272,7 +223,6 @@ fpgadata  ->адрес fpga rbf
 
 fpgaload=tftp ${fpgadata} ${tftpdir}${fpgaimage}; fpga load 0 ${fpgadata}; run bridge_enable_handoff; 
 1.run fpgaload
-
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -295,20 +245,18 @@ ramnetload=tftp ${rdiskaddr} ${tftpdir}${rdiskimage}
 4.команда на загрузку
 //в конце загружаем
 ramboot=setenv bootargs ramdisk_size=140000 mem=1G root=/dev/ram rw rootfstype=ramfs rootwait console=ttyS0,115200 coherent_pool=1M ecc=on ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
-
 run ramboot
 
 
 
-/ # can't run '/etc/rc.d/rcS': No such file or directory
 
+///////////////////////////////////////////Создание файловой Системы из набора файлов.rootfs/////////////////////////////////////////////////////
 
 dpkg -i multistrap_2.1.20_all.deb
-
 /home/pelengator/workspace/platform/armhf.sh /home/pelengator/workspace/platform-build/
-find . -print0 | cpio --null -ov --format=newc | gzip -9 > /home/pelengator/tmp/armhf-main-initramfs.cpio.gz
-mkimage  -A arm -T ramdisk -C gzip -n 'Debian Image' -d armhf-main-initramfs.cpio.gz uRamdisk
 
+//Создание файловой системы ramfs
+find . -print0 | cpio --null -ov --format=newc | gzip -9 > /home/pelengator/tmp/armhf-main-initramfs.cpio.gz
 mkimage  -A arm -T ramdisk -C gzip -n 'Debian Image' -d armhf-main-initramfs.cpio.gz uRamdisk_initramfs_root
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!/находясь в директории файловой системы!!!!!!!!!!!
@@ -319,42 +267,11 @@ ln -s sbin/init init
 
 /opt/ti/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux
 
-
-
 arm-linux-gnueabihf-
 
-
-
 opt/freescale/rootfs/arm/usr/local/   ---
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 setenv bootargs ramdisk_size=140000 mem=1G root=/dev/ram ro rootfstype=squashfs rootwait console=ttyS0,115200 coherent_pool=1M ecc=on ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
-
 setenv bootargs root=/dev/ram ro rootwait rootfstype=squashfs noinitrd console=ttyS0,115200 coherent_pool=1M ecc=on;ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
-
-
-
-
-_
-
-
-
-
-
-
-
 setenv bootargs root=/dev/ram ro rootwait rootfstype=squashfs noinitrd console=ttyS0,115200 coherent_pool=1M ecc=on;ip=${ipaddr}:${serverip}::${netmask}::eth0:off; bootz ${loadaddr} ${rdiskaddr} ${fdtaddr}
 
 
@@ -363,16 +280,7 @@ setenv bootargs root=/dev/ram ro rootwait rootfstype=squashfs noinitrd console=t
 
 
 
-
-
-
-
-
-
-
-
-
-
+//Проверка загрузки двух ядер в ядре Linux (вывод в консоль)
 Mount-cache hash table entries: 512
 CPU: Testing write buffer coherency: ok
 ftrace: allocating 16782 entries in 50 pages
@@ -393,8 +301,7 @@ CPU: All CPU(s) started in SVC mode.
 
 sudo /opt/freescale/ltib/usr/bin/rpm --root /home/kosta/ltib-p1020rdb_p2020rdb-20101029/rootfs --dbpath /var/lib/rpm -e --allmatches --nodeps --define '_tmppath /tmp/ltib' libtermcap 2>/dev/null
 sudo /opt/freescale/ltib/usr/bin/rpm --root /home/kosta/ltib-p1020rdb_p2020rdb-20101029/rootfs --dbpath /var/lib/rpm --prefix / --ignorearch -ivh --force --excludedocs --define '_tmppath /tmp/ltib' /home/kosta/ltib-p1020rdb_p2020rdb-20101029/rpm/RPMS/arm/libtermcap-2.0.8-31_1.arm.rpm
-error: failed dependencies:
-        libc.so.6(GLIBC_2.4)   is needed by libtermcap-2.0.8-3
+error: failed dependencies: libc.so.6(GLIBC_2.4)   is needed by libtermcap-2.0.8-3
 
 
 
@@ -404,33 +311,27 @@ error: failed dependencies:
 run ramnetload
 
 
-
+//Создание файла Hello Word для Плат.
 
 gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux
 export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabihf-
 
-
 arm-linux-gnueabihf-gcc -isystem/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/usr/include -c main.c	
 arm-linux-gnueabihf-gcc main main.o 
 
-
 /opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/arm-linux-gnueabihf/include/c++/4.8.3
 
-4
 
 
-linux-awga:/TMP/MODULE # export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
-linux-awga:/TMP/MODULE # export ARCH=arm
-linux-awga:/TMP/MODULE # export CROSS_COMPILE=arm-linux-gnueabihf-
 
+
+
+
+///Параметры Компиляции и Опции компилятора.
 
 https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
-
-
-
-
 '-mcpu=' are: arm1020e arm1020t arm1022e arm1026ej-s arm10e arm10tdmi arm1136j-s arm1136jf-s arm1156t2-s 
 arm1156t2f-s arm1176jz-s arm1176jzf-s arm2 arm250 arm3 arm6 arm60 arm600 arm610 arm620 arm7 arm70 arm700 
 arm700i arm710 arm7100 arm710c arm710t arm720 arm720t arm740t arm7500 arm7500fe arm7d arm7di arm7dm arm7dmi 
@@ -444,34 +345,38 @@ fmp626 generic-armv7-a iwmmxt iwmmxt2 marvell-pj4 mpcore mpcorenovfp native stro
 
 
 
-gcc-linaro-arm-linux-gnueabihf-4.8-2013.04-20130417_linux
-net-tools 1.60
-netstat 1.42 (2001-04-15)
 
 
 
-bootargs = "console=ttyS0,115200";
+
 
 
 
 
 //Как вызываеться файл DTC
-
-
 /home/kosta/bso_ltib/linux-socfpga/scripts/dtc/dtc -I dts -O dtb -o /home/pelengator/workspace/dtbimage.bin ./socfpga_arria5_furia.dts
-
-
-
 socfpga_arria5_furia_pelengator.dts->   socfpga_arria5.dtsi ->   socfpga.dtsi->   skeleton.dtsi.
 
 
 
 
-
-
+//*/////////////////////////////////////Создание Файловой Системы для UBIfs ,JFFS2 ext2 для //////////////*/////////////
 
 //Создаём файловую систему ext2
+http://free-electrons.com/blog/creating-flashing-ubi-ubifs-images/
+http://www.linux-mtd.infradead.org/faq/ubifs.html
 
+http://free-electrons.com/blog/managing-flash-storage-with-linux/
+http://comments.gmane.org/gmane.linux.drivers.mtd/35421
+
+https://blackfin.uclinux.org/doku.php?id=linux-kernel:ubifs
+http://processors.wiki.ti.com/index.php/UBIFS_Support
+
+http://www.linux-mtd.infradead.org/doc/ubifs.html
+http://www.2net.co.uk/downloads/ESC-5.4-flash_filesystems-slides.pdf
+
+
+http://processors.wiki.ti.com/index.php/Creating_a_Root_File_System_for_Linux_on_OMAP35x
 
 major minor  #blocks  name
 
@@ -481,21 +386,12 @@ major minor  #blocks  name
   31        3      12288 mtdblock3
   31        4      24576 mtdblock4
 
-
-
-
-
-
+//////////////////////////////////////////////////
   31        0        256 mtd0
   31        1        264 mtd1
   31        2        960 mtd2
   31        3      12288 mtd3
   31        4      24576 mtd4
-
-
-
-
-
 
 
 //Создаём файловую систему jffs2
@@ -515,30 +411,6 @@ File systems   --->
 //Создаём файловую систему ubifs
 mkfs.ubifs /dev/mtdblock4
 
-
-
-
-
-
-
-http://free-electrons.com/blog/creating-flashing-ubi-ubifs-images/
-http://www.linux-mtd.infradead.org/faq/ubifs.html
-
-
-
-http://free-electrons.com/blog/managing-flash-storage-with-linux/
-http://comments.gmane.org/gmane.linux.drivers.mtd/35421
-
-
-https://blackfin.uclinux.org/doku.php?id=linux-kernel:ubifs
-http://processors.wiki.ti.com/index.php/UBIFS_Support
-
-
-http://www.linux-mtd.infradead.org/doc/ubifs.html
-
-http://www.2net.co.uk/downloads/ESC-5.4-flash_filesystems-slides.pdf
-
-
 crw-rw----    1 root     root      249,   1 Jan  1 00:22 ubi0_0
 
 
@@ -546,9 +418,6 @@ mdev -s
 ubiattach -p /dev/mtd4
 mdev -s
 mount -t ubifs ubi0:pelengator  /mnt/f1p0/
-
-
-
 
 
 
@@ -562,21 +431,13 @@ UBIFS: media format: w4/r0 (latest is w4/r0), UUID 56A15EDE-2925-4535-B723-0ECB1
 
 
 
-
-http://processors.wiki.ti.com/index.php/Creating_a_Root_File_System_for_Linux_on_OMAP35x
-
-
-
-
+//монтируем jffs2
+mount -t jffs2 mtdblock1 /mnt/f1p0
+umount -t jffs2 mtdblock1 /mnt/f1p0
+для автоматического монтирования мы должны добавить файл что монтируем в файл fstab
 
 
-
-
-
-
-
-
-Что мы видим на вычислителе  FURY2.1 загрузили его
+//Пакеты установленные на вычислителе   Что мы видим на вычислителе  FURY2.1 загрузили его
 
 procps-ng version 3.3.3
 htop 1.0.1 - (C) 2004-2011 Hisham Muhammad
@@ -589,14 +450,9 @@ mkfs (util-linux 2.20.1)
 
 
 
-
+//////////////////////////////////////////////////////
 scp /lib root@<192.168.130.128>:/TMP/FURY
-
-
-
 arm_socfpga
-
-
 scp * root@192.168.130.128:/TMP
 
 
@@ -606,37 +462,13 @@ scp * root@192.168.130.128:/TMP
 
 
 
-//монтируем jffs2
-
-mount -t jffs2 mtdblock1 /mnt/f1p0
-
-umount -t jffs2 mtdblock1 /mnt/f1p0
 
 
 
 
-
-
-
-
-
-
-
-
-
-для автоматического монтирования мы должны добавить файл что монтируем в файл fstab
-
-
-
-
+////////////////////////////////Контрольные суммы для дополнительных библиотек///////////////
 MD5(mc-4.6.1.tar.gz)= 18b20db6e40480a53bac2870c56fc3c4
-
-
-
 MD5(ncurses-5.9.tar.gz)= 8cb9c412e5f2d96bc6f459aa8c6282a1
-
-
-
 MD5(ncurses-5.7.tar.gz)= cce05daf61a64501ef6cd8da1f727ec6
 
 
@@ -649,7 +481,7 @@ MD5(ncurses-5.7.tar.gz)= cce05daf61a64501ef6cd8da1f727ec6
 
 
 
-//Сборка NCURSES
+//////////////////////////////////////////Попытка Сборки NCURSES 5.8//////////////////////
 export BUILDMACH=i686-pc-linux-gnu
 export TARGETMACH=arm-none-linux-gnueabihf
 export AS=${CROSS}as
@@ -658,20 +490,13 @@ export CC=${CROSS}gcc
 export CROSS=arm-linux-gnueabihf-
 export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
 
-
-
-
 ./configure --host=$TARGETMACH --prefix=/home/pelengator/ncurses --with-shared --without-debug --without-ada --enable-overwrite --enable-widec
+./configure --host=$TARGETMACH --prefix=/opt/freescale/rootfs/arm --with-shared --without-debug -without-cxx-binding  --without-ada --enable-overwrite --enable-widec --disable-db-install                                              
 
 
 
 
-/configure --host=$TARGETMACH --prefix=/opt/freescale/rootfs/arm --with-shared --without-debug -without-cxx-binding  --without-ada --enable-overwrite --enable-widec --disable-db-install                                              
-
-
-
-
-//ПУТЬ к GLIB_CONFIg
+///////////////////////////////////////Попытка сборки GLIBC ПУТЬ к GLIB_CONFIg
 
 
 *** The glib-config script installed by GLIB could not be found
@@ -680,8 +505,6 @@ export PATH=$PATH:/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/bin
 *** full path to glib-config.
 configure: error: Test for glib failed.
 GNU Midnight Commander requires glib 1.2.6 or above
-
-
 
 
 Support for compiling GLIBC for ARM GNU/Linux (arm-none-linux-gnueabi)
@@ -697,7 +520,6 @@ That should get you started.
 
 If you are cross-compiling you should set --build, --host and --target
 appropriately.
-
 
 ../configure --target=arm-none-linux-gnueabihf --prefix=/opt/ti/tools --with-headers=/opt/ti/tools/include --enable-add-ons --enable-kernel=3.10.37 libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes --disable-profile --host=arm-linux-gnueabihf
 

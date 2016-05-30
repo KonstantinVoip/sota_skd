@@ -65,7 +65,7 @@ tftp 88000000    boc/bco/am335x-boneblack.dtb (не нужен для ядра 3.2) пробеум с 
 tftp 88080000    boc/bco/uRamdisk_initramfs_root
 
 bootz 82000000 88080000  88000000   //если использовать dtb файл
-bootz 82000000 88000000             //ядро и файловая система
+bootz 82000000 88080000             //ядро и файловая система
 
 bootm 80200000 80F80000
 ramboot=echo Booting from ramdisk ...; run ramargs; bootz ${loadaddr} ${rdaddr} ${fdtaddr}
@@ -79,10 +79,16 @@ bootargs=console=ttyO0,115200n8 root=/dev/ram0 rw rootfstype=ramfs
 
 
 
+tftp 8000        boc/bco/zImage
+tftp 100         boc/bco/dtbimage.bin (не нужен для ядра 3.2) пробеум с новыми версиями ядра
+tftp 1000000     boc/bco/uRamdisk_initramfs_root
+
+bootz 8000 1000000 100
+
 
 
 # CONFIG_SERIAL_OMAP is not set
-
+r
 
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j2
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bb.org_defconfig
@@ -199,7 +205,7 @@ updrdisk=run ramnetload; sf probe 0:0; sf update ${rdiskaddr} ${qspiramdiskaddr}
 scp main root@192.168.130.124:/mnt/f1p0/
 
 
-
+scp main root@192.168.130.124:/mnt/f1p0/
 
 ---------------------Название Файловой системы чтобы не менять---------------------
 uRamdisk_initramfs_root
@@ -435,8 +441,9 @@ UBIFS: media format: w4/r0 (latest is w4/r0), UUID 56A15EDE-2925-4535-B723-0ECB1
 mount -t jffs2 mtdblock1 /mnt/f1p0
 umount -t jffs2 mtdblock1 /mnt/f1p0
 для автоматического монтирования мы должны добавить файл что монтируем в файл fstab
+/dev/mtdblock1  /mnt/f1p0   jffs2  rw  0,0
 
-
+mount /dev/mmcblk0p2 /mnt/rwfs
 //Пакеты установленные на вычислителе   Что мы видим на вычислителе  FURY2.1 загрузили его
 
 procps-ng version 3.3.3
@@ -447,20 +454,35 @@ net-tools 1.60
 ifconfig 1.42 (2001-04-13)
 GNU Midnight Commander 4.8.3
 mkfs (util-linux 2.20.1)
+gdb server 7.4.1
+-------------------------------------------------------------------
+GNU Midnight Commander 4.8.3
+Built with GLib 2.32.4
+Using the S-Lang library with terminfo database
+With builtin Editor
+With subshell support as default
+With support for background operations
+With mouse support on xterm and Linux console
+With support for X11 events
+With internationalization support
+With multiple codepages support
+Virtual File Systems: cpiofs, tarfs, sfs, extfs, ext2undelfs, ftpfs, fish
+Data types: char: 8; int: 32; long: 32; void *: 32; size_t: 32; off_t: 64;
+-----------------------------------------------------------------------------
 
-
+GNU bash, version 4.2.37(1)-release (arm-unknown-linux-gnueabihf)
 
 //////////////////////////////////////////////////////
 scp /lib root@<192.168.130.128>:/TMP/FURY
 arm_socfpga
-scp * root@192.168.130.128:/TMP
+scp * root@192.168.130.128:/TMP/SSH
 
 
 
 
 
 
-
+scp /etc/ssh/* root@192.168.130.128:/TMP/SSH
 
 
 
@@ -472,11 +494,8 @@ MD5(ncurses-5.9.tar.gz)= 8cb9c412e5f2d96bc6f459aa8c6282a1
 MD5(ncurses-5.7.tar.gz)= cce05daf61a64501ef6cd8da1f727ec6
 
 
-
-
-
-
-
+MD5(gdb-7.4.1.tar.gz)= 5fb7fca9ef7a9e3cfee0e2f2c0e52051
+MD5(gdb-7.3.1.tar.gz)= c2795d636a9481d022608cab201be613
 
 
 
@@ -523,6 +542,26 @@ appropriately.
 
 ../configure --target=arm-none-linux-gnueabihf --prefix=/opt/ti/tools --with-headers=/opt/ti/tools/include --enable-add-ons --enable-kernel=3.10.37 libc_cv_forced_unwind=yes libc_cv_c_cleanup=yes --disable-profile --host=arm-linux-gnueabihf
 
+http://wiki.emacinc.com/wiki/Loading_Images_onto_eMMC_Devices
+///////////////////Хлам////////////////////////
+mount /dev/mmcblk0p2 /mnt/rwfs
 
 
+/home/kosta/bso_ltib/linux-3.14.26-g2489c02/scripts/dtc/dtc -I dts -O dtb -o /home/pelengator/workspace/am335x-boneblack.dtb ./am335x-boneblack.dts
+Затычки для файловой системы.
+-создаём папку /rootfs/lib/firmware
+cat /proc/partitions
+ 179        0    3833856 mmcblk0
+ 179       16       1024 mmcblk0boot1
+ 179        8       1024 mmcblk0boot0
 
+Linux version 3.14.26-g2489c02 (gtbldadm@ubuntu-12) (gcc version 4.7.3 20130226 (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.03-20130313 - Linaro GCC 2013.03) ) #1 Fri Apr 10 14:59:04 EDT 2015
+
+
+tftp  -g -r   /boc/bco/uImage 192.168.130.128
+
+
+/home/kosta/bso_ltib/linux-3.14.26-g2489c02/drivers/mmc/host
+
+        Device Boot      Start         End      Blocks   Id  System
+/dev/mmcblk0p1   *        2048      264191      131072    b  W95 FAT32

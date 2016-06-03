@@ -1,3 +1,17 @@
+опция для CMAKe  
+-DGOAL="arm"
+
+/linux-devkit/sysroots/i686-arago-linux/usr/bin/qt5/qmqke
+/usr/local/bin/mkimage 
+
+gdbserver: /usr/bin/gdbserver
+
+//нужно создать папку sysroot/lib   перекопировать туда lib из файловой системы
+выполнить на хост машине :
+(gdb) set sysroot /sysroot  
+
+
+
 http://processors.wiki.ti.com/index.php/Sitara_SDK_6.00.00_Release_Notes
 http://arago-project.org/git/projects/?p=linux-am33x.git;a=shortlog;h=refs/heads/AM335XPSP_04.06.00.08
 http://comments.gmane.org/gmane.linux.embedded.yocto.meta-ti/1966
@@ -29,7 +43,7 @@ http://downloads.ti.com/sitara_linux/esd/AM335xSDK/latest/index_FDS.html
 https://github.com/beagleboard/linux/tree/3.14
 https://github.com/RobertCNelson/ti-linux-kernel/tree/ti-linux-3.14.y
 http://studyprog.ru/bb_tisdk_qt/  //qt -создание
-
+https://habrahabr.ru/company/rainbow/blog/251053/    //gdb-отладкка
 Invalid CPU Type - valid names are: alpha, arm, x86, ia64, m68k, microblaze, mips, mips64, nios, nios2, ppc, s390, sh, sparc, sparc64, blackfin, avr32
 ./uboot-mkimage -A ppc -O Linux -T RAMDisk -a 0x00000000 -n uboot ext2 ramdisk rootfs -d zImage ramdisk.gz
 ./uboot-mkimage  -B 4 -A arm -O linux -T multi -C none -a 0x80008000 -e 0x80008000 -n k2x-uclibc/1.0/k21supertel -d rootfs.ext2.gz uimaget.bin
@@ -72,6 +86,9 @@ ramboot=echo Booting from ramdisk ...; run ramargs; bootz ${loadaddr} ${rdaddr} 
 bootargs=console=ttyO0,115200n8 root=/dev/ram0 rw rootfstype=ramfs
 
 
+tftp 82000000 zImage 
+tftp 88000000 am335x-boneblack.dtb
+tftp 88080000 uRamdisk_initramfs_root
 
 
 
@@ -325,7 +342,12 @@ export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabihf-
 
 arm-linux-gnueabihf-gcc -isystem/opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/usr/include -c main.c	
-arm-linux-gnueabihf-gcc main main.o 
+arm-linux-gnueabihf-gcc main.o -g main 
+
+arm-linux-gnueabihf-gcc main.c -O0 -g -o main
+arm-linux-gnueabihf-g++ main.c -O0 -g -o main
+
+
 
 /opt/ti/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux/arm-linux-gnueabihf/include/c++/4.8.3
 
@@ -497,7 +519,7 @@ MD5(ncurses-5.7.tar.gz)= cce05daf61a64501ef6cd8da1f727ec6
 MD5(gdb-7.4.1.tar.gz)= 5fb7fca9ef7a9e3cfee0e2f2c0e52051
 MD5(gdb-7.3.1.tar.gz)= c2795d636a9481d022608cab201be613
 
-
+MD5(termcap-1.3.1.tar.gz)= ffe6f86e63a3a29fa53ac645faaabdfa
 
 
 //////////////////////////////////////////Попытка Сборки NCURSES 5.8//////////////////////
@@ -565,3 +587,44 @@ tftp  -g -r   /boc/bco/uImage 192.168.130.128
 
         Device Boot      Start         End      Blocks   Id  System
 /dev/mmcblk0p1   *        2048      264191      131072    b  W95 FAT32
+
+
+sudo apt-get install curl
+
+
+
+
+
+
+
+
+
+
+
+
+Установка CROSS_TOOLS
+
+
+/usr/lib/arm-linux-gnueabihf
+
+sudo apt-get install qemu-user-static
+apt-get install libicu-dev:armhf
+arm-linux-gnueabihf-g++ test.cpp -o test
+sudo apt-get install crossbuild-essential-armhf
+sudo apt-get update
+sudo dpkg --add-architecture armhf
+curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | sudo apt-key add -
+sudo apt-get install build-essential
+sudo apt-get install curl
+apt-get install sudo
+
+
+
+
+
+
+
+
+
+
+

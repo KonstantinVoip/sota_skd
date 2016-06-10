@@ -1,3 +1,8 @@
+//Опции для wireshark.
+(ip.addr eq 192.168.130.124 and ip.addr eq 192.168.130.128)  and (udp.port eq 60950 and udp.port eq 8888)
+
+remotes/origin/Dispatcher_TIS_Ret
+
 опция для CMAKe  
 -DGOAL="arm"
 
@@ -78,7 +83,7 @@ tftp 82000000    boc/bco/zImage
 tftp 88000000    boc/bco/am335x-boneblack.dtb (не нужен для ядра 3.2) пробеум с новыми версиями ядра
 tftp 88080000    boc/bco/uRamdisk_initramfs_root
 
-bootz 82000000 88080000  88000000   //если использовать dtb файл
+bootz 82000000 88080000  88000000   //если использовать dtb файл    (bootz 82000000 89000000 88000000)  (bootz 82000000 88080000 83000000)
 bootz 82000000 88080000             //ядро и файловая система
 
 bootm 80200000 80F80000
@@ -87,8 +92,8 @@ bootargs=console=ttyO0,115200n8 root=/dev/ram0 rw rootfstype=ramfs
 
 
 tftp 82000000 zImage 
-tftp 88000000 am335x-boneblack.dtb
-tftp 88080000 uRamdisk_initramfs_root
+tftp 88000000 am335x-boneblack.dtb      tftp 83000000 am335x-boneblack.dtb  
+tftp 88080000 uRamdisk_initramfs_root   tftp 89000000 uRamdisk_initramfs_root
 
 
 
@@ -168,7 +173,7 @@ sf write 0x2000000 0x60000  $filesize
 
 
 
-
+omap2plus_defconfig
 
 
 ping 192.168.130.128
@@ -285,6 +290,10 @@ mkimage  -A arm -T ramdisk -C gzip -n 'Debian Image' -d armhf-main-initramfs.cpi
 !!!!!!!!!!!!!!!!!!!!!!!!!!!/находясь в директории файловой системы!!!!!!!!!!!
 ln -s sbin/init init
 
+libc-2.19.so
+ln -s libc-2.19.so libc.so.6
+
+ln -s libc-2.19.so /libstdc++.so
 
 /home/pelengator/workspace/linux-ltsi
 
@@ -328,7 +337,7 @@ error: failed dependencies: libc.so.6(GLIBC_2.4)   is needed by libtermcap-2.0.8
 
 
 
-
+omap2plus_defconfig
 
 
 run ramnetload
@@ -508,6 +517,9 @@ scp /etc/ssh/* root@192.168.130.128:/TMP/SSH
 
 
 
+MD5(openssh-6.1p1.tar.gz)= 3345cbf4efe90ffb06a78670ab2d05d5
+MD5(openssl-1.0.1b.tar.gz)= a1da58ce63baef3812004714fa302c47
+
 
 
 ////////////////////////////////Контрольные суммы для дополнительных библиотек///////////////
@@ -617,6 +629,46 @@ curl http://emdebian.org/tools/debian/emdebian-toolchain-archive.key | sudo apt-
 sudo apt-get install build-essential
 sudo apt-get install curl
 apt-get install sudo
+
+
+
+
+
+
+
+//Работа с SSH
+ssh-copy-id root@192.168.130.124
+
+
+
+
+АО УКБП 
+Рысин Александр Иванович – нач. отдела 4043
++7-902-0079707
+
+Адрес: ул. Крымова, 14, Ульяновск, Ульяновская обл., 
+УКБП располагается на территории завода УТЕС.
+
+Свяжись с Рысиным и передай ему сегодня паспортные данные. 
+Для оформления пропуска на территорию.!!
+
+При себе иметь паспорт 
+
+Почтовый адрес Рысина для отправки паспортных данных:
+nio-41 gop@ukbp.ru (В теме письма укажи «Рысину А.И.»)
+
+Или отправь по СМС.
+
+Alexei Lukin <a.lukin@npp-crts.ru>
+
+
+
+
+
+
+
+
+
 
 
 
